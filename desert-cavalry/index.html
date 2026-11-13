@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>大漠铁骑 · 第一人称冲锋</title>
+<link rel="icon" href="./favicon.svg" />
+<link rel="stylesheet" href="/src/ui/style.css" />
+</head>
+<body>
+<div id="stage">
+  <div id="frame">
+    <canvas id="view"></canvas>
+    <div id="fade"></div>
+    <div id="overlay">
+      <div id="title">
+        <h1>大漠铁骑</h1>
+        <p class="sub">河西走廊 · 日暮 · 第一人称冲锋</p>
+        <button id="btn-start" disabled>载入中…</button>
+        <p id="load-note"></p>
+      </div>
+    </div>
+    <div id="hud">
+      <div id="panel">
+        <button id="btn-pause" title="暂停 / 继续 (空格)">暂停</button>
+        <button id="btn-replay" title="重新播放 (R)">重播</button>
+        <label>近卫 <input id="rng-count" type="range" min="8" max="40" step="1" value="20"><output id="out-count">20</output></label>
+        <label>军阵 <input id="rng-legion" type="range" min="0" max="2000" step="50" value="1000"><output id="out-legion">1000</output></label>
+        <label>速度 <input id="rng-speed" type="range" min="0.6" max="1.4" step="0.05" value="1"><output id="out-speed">1.00×</output></label>
+        <label class="chk"><input id="chk-dust" type="checkbox" checked> 黄沙</label>
+        <label class="chk"><input id="chk-sound" type="checkbox" checked> 声音</label>
+        <select id="sel-format" title="导出格式"><option value="mp4">MP4</option><option value="webm">WebM</option></select>
+        <button id="btn-rec" title="从头录制一整段 20 秒（画面 + 声音）并自动下载">录制</button>
+        <button id="btn-full" title="全屏 (F)">全屏</button>
+        <span id="clock">00.0 / 20.0</span>
+      </div>
+      <button id="btn-panel" title="显示 / 隐藏控制面板 (H)">☰</button>
+    </div>
+  </div>
+</div>
+<script type="module" src="/src/main.js"></script>
+</body>
+</html>

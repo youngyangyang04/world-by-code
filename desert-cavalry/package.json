@@ -1,0 +1,22 @@
+{
+  "name": "desert-cavalry",
+  "private": true,
+  "version": "0.1.0",
+  "description": "大漠铁骑：第一人称骑兵冲锋的实时 3D 演出（Three.js）",
+  "type": "module",
+  "engines": {
+    "node": ">=20.19.0"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "three": "^0.170.0"
+  },
+  "devDependencies": {
+    "puppeteer-core": "^25.17.0",
+    "vite": "^8.3.8"
+  }
+}

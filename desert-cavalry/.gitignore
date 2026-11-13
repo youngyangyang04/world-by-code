@@ -1,0 +1,6 @@
+node_modules
+dist
+.DS_Store
+# 页面「录制」导出的视频
+iron-cavalry-charge-*.mp4
+iron-cavalry-charge-*.webm

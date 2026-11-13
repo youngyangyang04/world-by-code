@@ -1,0 +1,38 @@
+<!doctype html><meta charset="utf-8"><body style="margin:0;background:#000">
+<canvas id="c" style="width:100vw;height:100vh;display:block"></canvas>
+<script type="module">
+import * as THREE from 'three';
+import { loadHorseAsset } from '/src/cavalry/horseAsset.js';
+import { Herd } from '/src/cavalry/herd.js';
+const q = new URLSearchParams(location.search);
+const r = new THREE.WebGLRenderer({ canvas: document.getElementById('c'), antialias: true, premultipliedAlpha: false });
+r.setSize(innerWidth, innerHeight, false);
+const scene = new THREE.Scene(); scene.background = new THREE.Color(0x9aa0aa);
+scene.add(new THREE.HemisphereLight(0xffffff, 0x665544, 1.3));
+const dl = new THREE.DirectionalLight(0xffffff, 2.5); dl.position.set(3, 5, 2); scene.add(dl);
+scene.add(new THREE.GridHelper(40, 40, 0x333333, 0x777777));
+const cam = new THREE.PerspectiveCamera(30, innerWidth / innerHeight, 0.05, 500);
+const asset = await loadHorseAsset('/assets/models/horse_run.glb');
+const n = +(q.get('n') ?? 6);
+const herd = new Herd(asset, n); herd.setCount(n); scene.add(herd.horse);
+const m = new THREE.Matrix4(), p = new THREE.Vector3(), qq = new THREE.Quaternion();
+const sp = +(q.get('sp') ?? 4);
+for (let i = 0; i < n; i++) {
+  const ph = i / n + (+(q.get('ph') ?? 0));
+  m.makeTranslation(0, 0, i * sp); herd.setInstance(i, m, ph);
+  for (const s of Object.keys(asset.sockets)) {
+    asset.sampleSocket(s, ph, p, qq);
+    const ax = new THREE.AxesHelper(0.35); ax.position.copy(p).add(new THREE.Vector3(0, 0, i * sp)); ax.quaternion.copy(qq);
+    // 轴画在 rest 原点经过挂点变换后的位置 → 另画一个在 socket 中心
+    const c = { saddle: [0, 1.6, 0], head: [0, 1.75, -1.4], neck: [0, 1.85, -0.8], croup: [0, 1.66, 0.9], chest: [0, 1.2, -0.75] }[s];
+    const ax2 = new THREE.AxesHelper(0.3); ax2.position.set(...c).applyQuaternion(qq).add(p).add(new THREE.Vector3(0, 0, i * sp)); ax2.quaternion.copy(qq); scene.add(ax2);
+  }
+  for (let h = 0; h < 4; h++) { const hp = asset.sampleHoof(h, ph, new THREE.Vector3()); const s = new THREE.Mesh(new THREE.SphereGeometry(0.04), new THREE.MeshBasicMaterial({ color: [0xff0000, 0x00ff00, 0x0000ff, 0xffff00][h] })); s.position.copy(hp).add(new THREE.Vector3(0, 0, i * sp)); scene.add(s); }
+}
+herd.commit();
+window.__info = { period: asset.period, stride: asset.strideLength, loopErr: asset.loopError, hoofs: asset.hoofs.map((h) => [h.name, +h.strike.toFixed(3), +h.lift.toFixed(3)]), sockets: Object.fromEntries(Object.entries(asset.sockets).map(([k, v]) => [k, v.count])) };
+window.__asset = asset; window.__r = r; window.__herd = herd; window.__scene = scene; window.__cam = cam;
+window.__view = (px, py, pz, tx, ty, tz, fov) => { cam.fov = fov ?? 30; cam.updateProjectionMatrix(); cam.position.set(px, py, pz); cam.lookAt(tx, ty, tz); r.render(scene, cam); const gl = r.getContext(); gl.colorMask(false, false, false, true); gl.clearColor(0, 0, 0, 1); gl.clear(gl.COLOR_BUFFER_BIT); gl.colorMask(true, true, true, true); r.resetState(); };
+if (q.get('quad')) { const pl = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), new THREE.MeshBasicMaterial({ map: asset.maps[q.get('quad')] })); pl.position.set(0, 3.2, 0); pl.rotation.y = Math.PI / 2; scene.add(pl); }
+window.__ready = true;
+</script>

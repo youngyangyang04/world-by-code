@@ -1,0 +1,38 @@
+<!doctype html><meta charset="utf-8"><body style="margin:0;background:#667">
+<canvas id="c" style="width:100vw;height:100vh;display:block"></canvas>
+<script type="module">
+// 开发用模型预览：?m=<url>&clip=<name|index>&t=<0..1>&az=<deg>&el=<deg>&d=<dist factor>
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { FBXLoader } from 'three/addons/loaders/FBXLoader.js';
+const q = new URLSearchParams(location.search);
+const r = new THREE.WebGLRenderer({ canvas: document.getElementById('c'), antialias: true });
+r.setSize(innerWidth, innerHeight, false);
+const scene = new THREE.Scene(); scene.background = new THREE.Color(0x8890a0);
+scene.add(new THREE.HemisphereLight(0xffffff, 0x554433, 1.2));
+const dl = new THREE.DirectionalLight(0xffffff, 2.5); dl.position.set(3, 5, 4); scene.add(dl);
+const cam = new THREE.PerspectiveCamera(35, innerWidth / innerHeight, 0.01, 1000);
+const url = q.get('m');
+const root = url.toLowerCase().endsWith('.fbx') ? await new FBXLoader().loadAsync(url) : await new GLTFLoader().loadAsync(url);
+const obj = root.scene ?? root; const clips = root.animations ?? [];
+scene.add(obj);
+const hide = q.get('hide'); if (hide) obj.traverse((o) => { if (o.isMesh && o.name.includes(hide)) o.visible = false; });
+obj.traverse((o) => { if (o.isMesh) { window.__morph = window.__morph || Object.keys(o.morphTargetDictionary || {}).length; } });
+const mixer = new THREE.AnimationMixer(obj);
+window.__info = { clips: clips.map((c) => [c.name, +c.duration.toFixed(3), c.tracks.length]), bones: [], meshes: [] };
+obj.traverse((o) => { if (o.isBone) window.__info.bones.push(o.name); if (o.isMesh) window.__info.meshes.push([o.name, o.geometry.attributes.position.count, !!o.isSkinnedMesh, o.material?.name, !!o.material?.map]); });
+let action = null;
+window.__show = (clip, t, az, el, d) => {
+  if (action) action.stop();
+  const c = typeof clip === 'number' ? clips[clip] : clips.find((x) => x.name === clip);
+  if (c) { action = mixer.clipAction(c); action.play(); mixer.setTime(t * c.duration); }
+  obj.updateMatrixWorld(true);
+  const box = new THREE.Box3(); obj.traverse((o) => { if (o.isMesh && o.visible) box.expandByObject(o, true); }); const s = box.getSize(new THREE.Vector3()), ctr = box.getCenter(new THREE.Vector3());
+  const R = Math.max(s.x, s.y, s.z) * (d ?? 1.7);
+  const a = az * Math.PI / 180, e = el * Math.PI / 180;
+  cam.position.set(ctr.x + R * Math.sin(a) * Math.cos(e), ctr.y + R * Math.sin(e), ctr.z + R * Math.cos(a) * Math.cos(e));
+  cam.lookAt(ctr); r.render(scene, cam);
+  return { size: s.toArray().map((v) => +v.toFixed(3)), center: ctr.toArray().map((v) => +v.toFixed(3)) };
+};
+window.__ready = true;
+</script>
