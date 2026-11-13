@@ -1,6 +1,6 @@
 # 大漠铁骑 · 第一人称冲锋
 
-> [code-to-world](../README.md) 的第一个作品。
+> [world-by-code](../README.md) 的第一个作品。
 
 河西走廊，日暮。你骑在战马上，身边是 20 名重甲近卫，外围是上千骑的大唐军阵，一起向落日冲锋。
 
@@ -21,8 +21,8 @@
 需要 Node.js 20.19 或更高版本（推荐 22.12+），以及支持 WebGL2 的桌面浏览器（推荐 Chrome）。
 
 ```bash
-git clone https://github.com/youngyangyang04/code-to-world.git
-cd code-to-world/desert-cavalry
+git clone https://github.com/youngyangyang04/world-by-code.git
+cd world-by-code/desert-cavalry
 npm ci            # 按 package-lock.json 安装，版本完全确定
 npm run dev       # 打开 http://127.0.0.1:5173
 ```

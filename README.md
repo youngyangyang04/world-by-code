@@ -1,4 +1,4 @@
-# code-to-world
+# world-by-code
 
 用代码创造世界。
 
@@ -21,8 +21,8 @@
 每个作品是一个独立目录，互不依赖，进入目录按它自己的 README 操作即可。以大漠铁骑为例：
 
 ```bash
-git clone https://github.com/youngyangyang04/code-to-world.git
-cd code-to-world/desert-cavalry
+git clone https://github.com/youngyangyang04/world-by-code.git
+cd world-by-code/desert-cavalry
 npm ci
 npm run dev       # 打开 http://127.0.0.1:5173
 ```
@@ -32,7 +32,7 @@ npm run dev       # 打开 http://127.0.0.1:5173
 ## 仓库结构
 
 ```
-code-to-world/
+world-by-code/
   README.md            本文件
   desert-cavalry/      大漠铁骑
     README.md          效果图、启动方法、安全部署、实现说明
